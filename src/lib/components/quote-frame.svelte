@@ -36,6 +36,7 @@
   import QuoteEditorial from './icons/quote-editorial.svelte'
   import QuoteBreeze from './icons/quote-breeze.svelte'
   import QuoteClaude from './icons/quote-claude.svelte'
+  import QuoteeLogoMark from './icons/quotee-logo-mark.svelte'
 
   export let frameRef: HTMLDivElement | null = null
   export let editable: boolean = true
@@ -161,6 +162,14 @@
   <div class="quote-content" style="color: {textColor}">
     {@render quoteContent()}
   </div>
+
+  <span
+    class="pointer-events-none absolute right-2 bottom-2 z-20 inline-flex items-center gap-1 opacity-90"
+    aria-hidden="true"
+  >
+    <QuoteeLogoMark class="h-3.5 w-3.5" />
+    <span class="font-instrument-serif text-[10px] leading-none text-white">Quotee</span>
+  </span>
 </div>
 
 {#snippet auraOverlay()}
