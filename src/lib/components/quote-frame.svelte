@@ -65,6 +65,7 @@
   }[$alignment]
 
   $: isChirpBrand = theme.quoteStyle === 'chirp' && !!theme.brand
+  $: isInstagramTheme = theme.brand === 'instagram'
 
   /** X/LinkedIn chirp themes use `.quote-card.style-x` */
   $: frameFontFamily =
@@ -152,7 +153,8 @@
     : isGradient
       ? `background: ${$showBackground ? bg : 'transparent'}`
       : `background-color: ${$showBackground ? bg : 'transparent'}`};
-    {frameFontFamily}
+    {frameFontFamily};
+    {isInstagramTheme ? 'aspect-ratio: 4 / 5;' : ''}
   "
 >
   {#if !$showBackground}
@@ -274,7 +276,11 @@
 
           {#if $showBrandLogo}
             <span class="mx-3 text-lg opacity-40 font-light" style="color: {accentColor}">|</span>
-            <VercelWordmark color={textColor} size={60} />
+            {#if theme.brand === 'instagram'}
+              <InstagramLogoMark size={16} />
+            {:else}
+              <VercelWordmark color={textColor} size={60} />
+            {/if}
           {/if}
         </div>
       </div>

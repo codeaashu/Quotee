@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { frameWidth } from '$lib/stores';
+  import { frameWidth, selectedTheme } from '$lib/stores';
   import { onDestroy } from 'svelte';
   import { browser } from '$app/environment';
   import type { Snippet } from 'svelte';
@@ -12,12 +12,16 @@
 
   const MIN_WIDTH = 400;
   const MAX_WIDTH = 920;
+  const INSTAGRAM_DEFAULT_WIDTH = 720;
 
   let windowRef: HTMLDivElement | undefined = $state();
   let isResizing = $state(false);
   let currentHandle: 'left' | 'right' | null = $state(null);
   let startWidth = $state(0);
   let startX = $state(0);
+
+  let isInstagramTheme = $derived($selectedTheme?.brand === 'instagram');
+  let effectiveWidth = $derived($frameWidth ?? (isInstagramTheme ? INSTAGRAM_DEFAULT_WIDTH : null));
 
   function handleMouseDown(event: MouseEvent, handle: 'left' | 'right') {
     if (!windowRef) return;
@@ -108,7 +112,7 @@
   <div
     bind:this={windowRef}
     class="frame-content"
-    style="width: {$frameWidth ? `${$frameWidth}px` : 'auto'}"
+    style="width: {effectiveWidth ? `${effectiveWidth}px` : 'auto'}; {isInstagramTheme ? 'aspect-ratio: 4 / 5;' : ''}"
   >
     {@render children()}
   </div>
