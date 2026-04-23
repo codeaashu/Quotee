@@ -9,9 +9,7 @@
     showBackground,
     showQuoteMarks,
     showBrandLogo,
-    showXVerifiedBadge,
-    customBrandLogos,
-    useCustomBrandLogos
+    showXVerifiedBadge
   } from '$lib/stores'
   import { quoteText, authorName, hasUserEdited } from '$lib/stores/quote'
   import type { QuoteStyle } from '$lib/themes'
@@ -30,7 +28,6 @@
   import TiktokLogoMark from './icons/tiktok-logo-mark.svelte'
   import InstagramLogoMark from './icons/instagram-logo-mark.svelte'
   import FacebookLogoMark from './icons/facebook-logo-mark.svelte'
-  import VercelLogoMark from './icons/vercel-logo-mark.svelte'
   import XLogoMark from './icons/x-logo-mark.svelte'
   import XVerifiedBadge from './icons/x-verified-badge.svelte'
   import QuoteBrutalist from './icons/quote-brutalist.svelte'
@@ -69,12 +66,6 @@
 
   $: isChirpBrand = theme.quoteStyle === 'chirp' && !!theme.brand
   $: isInstagramTheme = theme.brand === 'instagram'
-  $: supportsCustomLogos = theme.brand === 'vercel' || theme.brand === 'instagram' || theme.brand === 'x'
-  $: defaultBrandLogos = getDefaultBrandLogos(theme.brand)
-  $: activeCustomBrandLogos =
-    $useCustomBrandLogos && supportsCustomLogos
-      ? $customBrandLogos
-      : defaultBrandLogos
 
   /** X/LinkedIn chirp themes use `.quote-card.style-x` */
   $: frameFontFamily =
@@ -148,15 +139,6 @@
         node.removeEventListener('paste', onPaste)
       }
     }
-  }
-
-  type CustomBrandLogo = 'vercel' | 'instagram' | 'x'
-
-  function getDefaultBrandLogos(brand?: string): CustomBrandLogo[] {
-    if (brand === 'vercel') return ['vercel']
-    if (brand === 'instagram') return ['instagram']
-    if (brand === 'x') return ['x']
-    return []
   }
 </script>
 
@@ -249,16 +231,6 @@
   {/if}
 {/snippet}
 
-{#snippet customBrandLogo(logo: CustomBrandLogo)}
-  {#if logo === 'vercel'}
-    <VercelLogoMark size={16} />
-  {:else if logo === 'instagram'}
-    <InstagramLogoMark size={16} />
-  {:else if logo === 'x'}
-    <XLogoMark color={textColor} size={14} />
-  {/if}
-{/snippet}
-
 {#snippet quoteContent()}
   <!-- Brutalist themes -->
   {#if theme.quoteStyle === 'brutalist'}
@@ -302,14 +274,10 @@
         >
           {@render editableAuthor('text-sm font-semibold tracking-widest')}
 
-          {#if $showBrandLogo && (supportsCustomLogos ? activeCustomBrandLogos.length > 0 : true)}
+          {#if $showBrandLogo}
             <span class="mx-3 text-lg opacity-40 font-light" style="color: {accentColor}">|</span>
-            {#if supportsCustomLogos}
-              <span class="inline-flex items-center gap-2">
-                {#each activeCustomBrandLogos as logo (logo)}
-                  {@render customBrandLogo(logo)}
-                {/each}
-              </span>
+            {#if theme.brand === 'instagram'}
+              <InstagramLogoMark size={16} />
             {:else}
               <VercelWordmark color={textColor} size={60} />
             {/if}
@@ -360,15 +328,9 @@
           {/if}
         </div>
 
-        {#if $showBrandLogo && (supportsCustomLogos ? activeCustomBrandLogos.length > 0 : true)}
+        {#if $showBrandLogo}
           <span class="mr-2 text-sm font-light opacity-50" style="color: {accentColor}">|</span>
-          {#if supportsCustomLogos}
-            <span class="inline-flex items-center gap-2">
-              {#each activeCustomBrandLogos as logo (logo)}
-                {@render customBrandLogo(logo)}
-              {/each}
-            </span>
-          {:else if theme.brand === 'linkedin'}
+          {#if theme.brand === 'linkedin'}
             {#if theme.id === 'linkedin-dark'}
               <LinkedinLogoMark size={16} />
             {:else}
@@ -392,6 +354,8 @@
             <TelegramLogoMark size={16} />
           {:else if theme.brand === 'tiktok'}
             <TiktokLogoMark size={16} />
+          {:else if theme.brand === 'instagram'}
+            <InstagramLogoMark size={16} />
           {:else if theme.brand === 'facebook'}
             <FacebookLogoMark size={16} />
           {:else}

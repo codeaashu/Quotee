@@ -1,7 +1,5 @@
 <script lang="ts">
   import { get } from 'svelte/store'
-  import type { Writable } from 'svelte/store'
-  import { derived } from 'svelte/store'
   import { quintOut, quintIn } from 'svelte/easing'
 
   function slideX(
@@ -37,15 +35,7 @@
   import ImportModal from '$lib/components/import-modal.svelte'
   import InfoIcon from '$lib/components/icons/info.svelte'
   import SocialLinkIcon from '$lib/components/icons/social-link.svelte'
-  import {
-    showQuoteMarks,
-    selectedThemeId,
-    selectedTheme,
-    showBrandLogo,
-    showXVerifiedBadge,
-    customBrandLogos,
-    useCustomBrandLogos
-  } from '$lib/stores'
+  import { showQuoteMarks, selectedThemeId, selectedTheme, showBrandLogo, showXVerifiedBadge } from '$lib/stores'
   import AashuuLogoMark from '$lib/components/icons/aashuu-logo-mark.svelte'
 
   let aboutOpen = false
@@ -93,64 +83,6 @@
   }
 
   $: isBrandTheme = Boolean($selectedTheme?.brand)
-  $: isCustomLogoTheme = ['vercel', 'instagram', 'x'].includes($selectedTheme?.brand ?? '')
-
-  type CustomLogoId = 'vercel' | 'instagram' | 'x'
-
-  function getDefaultLogos(brand?: string): CustomLogoId[] {
-    if (brand === 'instagram') return ['instagram']
-    if (brand === 'x') return ['x']
-    if (brand === 'vercel') return ['vercel']
-    return []
-  }
-
-  function createBrandLogoToggleStore(logoId: CustomLogoId): Writable<boolean> {
-    const readable = derived(
-      [selectedTheme, useCustomBrandLogos, customBrandLogos],
-      ([$selectedTheme, $useCustomBrandLogos, $customBrandLogos]) => {
-        const brand = $selectedTheme?.brand
-        const fallback = getDefaultLogos(brand)
-        const effective = $useCustomBrandLogos && ['vercel', 'instagram', 'x'].includes(brand ?? '')
-          ? $customBrandLogos
-          : fallback
-        return effective.includes(logoId)
-      }
-    )
-
-    const store: Writable<boolean> = {
-      subscribe: readable.subscribe,
-      set: (value: boolean) => {
-        store.update(() => value)
-      },
-      update: (updater: (value: boolean) => boolean) => {
-        const brand = get(selectedTheme)?.brand
-        if (!['vercel', 'instagram', 'x'].includes(brand ?? '')) {
-          return
-        }
-
-        const current = get(useCustomBrandLogos)
-          ? get(customBrandLogos)
-          : getDefaultLogos(brand)
-
-        const hasLogo = current.includes(logoId)
-        const nextEnabled = updater(hasLogo)
-        const next = nextEnabled
-          ? hasLogo
-            ? current
-            : [...current, logoId]
-          : current.filter((logo) => logo !== logoId)
-
-        useCustomBrandLogos.set(true)
-        customBrandLogos.set(next)
-      }
-    }
-
-    return store
-  }
-
-  const vercelLogoToggle = createBrandLogoToggleStore('vercel')
-  const instagramLogoToggle = createBrandLogoToggleStore('instagram')
-  const xLogoToggle = createBrandLogoToggleStore('x')
 </script>
 
 <svelte:head>
@@ -251,11 +183,6 @@
         >
           <div class="w-px h-12 bg-black/10 rounded-full shrink-0"></div>
           <ToggleControl store={showBrandLogo} label="Logo" />
-          {#if isCustomLogoTheme}
-            <ToggleControl store={vercelLogoToggle} label="Vercel" />
-            <ToggleControl store={instagramLogoToggle} label="Instagram" />
-            <ToggleControl store={xLogoToggle} label="X" />
-          {/if}
           {#if $selectedThemeId.includes('x')}
             <ToggleControl store={showXVerifiedBadge} label="Verified" />
           {/if}
