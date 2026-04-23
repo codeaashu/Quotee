@@ -155,3 +155,36 @@ export function copyShareableUrl(): string {
 export const showBrandLogo = writable<boolean>(true);
 
 export const showXVerifiedBadge = writable<boolean>(false);
+
+export type CustomBrandLogo = 'vercel' | 'instagram' | 'x';
+
+const CUSTOM_BRAND_LOGOS: readonly CustomBrandLogo[] = ['vercel', 'instagram', 'x'];
+
+function serializeCustomBrandLogos(logos: CustomBrandLogo[]): string {
+  return logos.join(',');
+}
+
+function deserializeCustomBrandLogos(raw: string): CustomBrandLogo[] {
+  if (!raw) return [];
+  const unique = new Set<CustomBrandLogo>();
+  raw.split(',').forEach((value) => {
+    if ((CUSTOM_BRAND_LOGOS as readonly string[]).includes(value)) {
+      unique.add(value as CustomBrandLogo);
+    }
+  });
+  return Array.from(unique);
+}
+
+export const useCustomBrandLogos = createHashStore<boolean>(
+  'customLogos',
+  false,
+  (val) => (val ? 'true' : 'false'),
+  (str) => str === 'true'
+);
+
+export const customBrandLogos = createHashStore<CustomBrandLogo[]>(
+  'logos',
+  [],
+  serializeCustomBrandLogos,
+  deserializeCustomBrandLogos
+);
