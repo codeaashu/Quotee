@@ -154,11 +154,6 @@
     </div>
   </main>
 
-  <footer class="px-6 pb-24 text-center text-xs leading-relaxed text-ink-600">
-    Quotee is a free quote maker and quote creator for crafting beautiful quote images, quote
-    snapshots, and social-ready quote posts.
-  </footer>
-
   <!-- Bottom Controls Bar -->
   <div
     class="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-2 pb-2 sm:px-4 sm:pb-4 pointer-events-none"
